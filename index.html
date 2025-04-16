@@ -64,12 +64,33 @@
           margin: 0;
           max-width: 100%;
         }
+        /* --- REVISED AGAIN FOR PAGE ENTRIES --- */
         .damage-entry {
-          page-break-inside: avoid;
-          border: 1px solid #e5e7eb;
-          margin-bottom: 1rem;
+          page-break-inside: avoid; /* Try to keep content together */
+          page-break-after: always; /* Force break after each entry */
+          border: none;
+          margin-bottom: 0;
+          padding-bottom: 1cm; /* Add padding at bottom */
+          /* REMOVED min-height: 90vh */
+          display: block; /* Revert to block layout for simplicity */
           background-color: white !important;
         }
+        .damage-entry:last-of-type {
+          page-break-after: auto;
+        }
+        /* Use default block flow for grid and its children */
+        .damage-entry .grid {
+          display: block; /* Ensure block display */
+        }
+        .damage-entry .grid > div {
+          margin-bottom: 0.5rem;
+          /* REMOVED flex-grow */
+        }
+        .damage-entry .grid > div:last-child {
+          /* Image parent div */
+          /* REMOVED flex properties */
+        }
+
         input[type="text"],
         textarea,
         input[type="date"] {
@@ -78,41 +99,49 @@
           padding: 2px 0;
           background-color: transparent;
           width: 100%;
-          color: black; /* Ensure text is black for printing */
+          color: black;
         }
         textarea {
-          height: auto; /* Allow textarea to shrink/grow */
-          min-height: 40px; /* Minimum height */
-          border: 1px solid #ccc; /* Add border for clarity */
+          height: auto;
+          min-height: 40px;
+          border: 1px solid #ccc;
           padding: 4px;
         }
         label {
           font-weight: bold;
           color: black;
         }
-        img.image-preview {
-          /* Target only preview images */
-          max-width: 90% !important; /* Slightly smaller than container */
-          max-height: 150px !important;
-          display: block;
-          border-radius: 0;
-          margin: 5px auto; /* Center image */
-        }
+
         .image-preview-container {
           border: 1px solid #ccc;
-          min-height: auto;
           background-color: white !important;
-          padding: 5px; /* Add padding */
+          padding: 5px;
+          display: flex; /* Keep flex for centering */
+          align-items: center;
+          justify-content: center;
+          /* REMOVED flex-grow */
+          overflow: hidden;
+          min-height: 150px; /* Optional: ensure some minimum space */
         }
-        .grid {
+
+        img.image-preview {
+          max-width: 100% !important;
+          width: auto;
+          /* Reintroduce max-height, less aggressive */
+          max-height: 60vh !important; /* Limit height relative to viewport */
+          object-fit: contain !important;
           display: block;
+          border-radius: 0;
+          margin: 0 auto;
         }
-        .grid > div {
-          margin-bottom: 1rem;
-        }
+
         #signature-name-display {
-          color: black; /* Ensure signature name is black */
+          color: black;
         }
+        #damage-entry-template {
+          display: none !important;
+        }
+        /* --- END REVISION --- */
       }
 
       /* Style for input fields */
@@ -132,7 +161,7 @@
         resize: vertical;
         border: 1px solid #d1d5db;
         border-radius: 0.375rem;
-        padding: 0.5rem; /* Add padding */
+        padding: 0.5rem;
       }
       textarea.form-input:focus {
         border-color: #3b82f6;
@@ -192,9 +221,9 @@
         />
       </div>
 
-      <hr class="my-8 border-gray-300" />
+      <hr class="my-8 border-gray-300 print:hidden" />
 
-      <div id="damage-entries-container"></div>
+      <div id="damage-entries-container">{/* Entries added here */}</div>
 
       <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4 no-print">
         <button
@@ -218,7 +247,7 @@
         style="display: none"
       />
 
-      <hr class="my-8 border-gray-300" />
+      <hr class="my-8 border-gray-300 print:hidden" />
 
       <div class="mt-12 pt-8 border-t border-gray-300 print:border-t-0">
         <p class="text-sm font-medium text-gray-700 mb-1">ลงชื่อ:</p>
@@ -251,7 +280,7 @@
       style="display: none"
     >
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-lg font-semibold damage-point-title">จุดที่ 1</h2>
+        <h2 class="text-lg font-semibold damage-point-title">จุดที่ X</h2>
         <button
           class="remove-damage-point text-red-500 hover:text-red-700 no-print"
           title="ลบจุดนี้"
@@ -482,7 +511,10 @@
       function addDamageEntry(data = null, shouldSave = true) {
         const newEntry = damageEntryTemplate.cloneNode(true);
         newEntry.id = "";
-        newEntry.style.display = "block";
+        newEntry.style.display = "block"; // Make visible by default
+
+        // Check if it's the template node itself before processing
+        if (newEntry.id === "damage-entry-template") return null;
 
         if (data) {
           newEntry.querySelector('input[name="room[]"]').value =
@@ -524,10 +556,10 @@
         });
 
         damageEntriesContainer.appendChild(newEntry);
-        // Note: updateDamagePointNumbers is called *after* adding potentially multiple entries
 
+        // Update numbers after adding, only save if requested
+        updateDamagePointNumbers();
         if (shouldSave) {
-          updateDamagePointNumbers(); // Update numbers before saving single entry
           saveDataToLocalStorage();
         }
         return newEntry;
@@ -540,64 +572,70 @@
       // --- Event Listeners ---
 
       addDamageButton.addEventListener("click", () => {
-        addDamageEntry(null, true); // Add blank entry and save
+        addDamageEntry(null, true);
       });
 
-      // Add multiple points from images button - MODIFIED
       addMultipleButton.addEventListener("click", () => {
-        // REMOVED: Confirmation check
-        // Directly trigger the hidden multiple file input
         multiImageUploadInput.click();
       });
 
-      // Listener for the hidden multiple file input - MODIFIED
       multiImageUploadInput.addEventListener("change", (event) => {
         const files = event.target.files;
         if (!files || files.length === 0) {
           return;
         }
-
         console.log(
           `Processing ${files.length} files for multiple entry creation.`,
         );
 
-        // REMOVED: Clearing existing entries (damageEntriesContainer.innerHTML = '';)
+        // Use Promise.all to wait for all images to be processed before saving
+        const filePromises = Array.from(files).map((file) => {
+          return new Promise((resolve, reject) => {
+            if (file.type.startsWith("image/")) {
+              const newEntryElement = addDamageEntry(null, false); // Add entry but don't save yet
 
-        // Process each file and append it
-        Array.from(files).forEach((file) => {
-          if (file.type.startsWith("image/")) {
-            // Add blank entry, don't save individually, get the element back
-            const newEntryElement = addDamageEntry(null, false);
+              const previewImage =
+                newEntryElement.querySelector(".image-preview");
+              const previewPlaceholder = newEntryElement.querySelector(
+                ".image-preview-placeholder",
+              );
+              const filenameDisplay =
+                newEntryElement.querySelector(".image-filename");
+              const imageDataUrlInput =
+                newEntryElement.querySelector(".image-data-url");
 
-            const previewImage =
-              newEntryElement.querySelector(".image-preview");
-            const previewPlaceholder = newEntryElement.querySelector(
-              ".image-preview-placeholder",
-            );
-            const filenameDisplay =
-              newEntryElement.querySelector(".image-filename");
-            const imageDataUrlInput =
-              newEntryElement.querySelector(".image-data-url");
-
-            const reader = new FileReader();
-            reader.onload = function (e) {
-              const dataUrl = e.target.result;
-              previewImage.src = dataUrl;
-              imageDataUrlInput.value = dataUrl; // Store data URL
-              previewImage.classList.remove("hidden");
-              previewPlaceholder.classList.add("hidden");
-              filenameDisplay.textContent = `ไฟล์: ${file.name}`;
-              // Note: Saving happens once after the loop finishes
-            };
-            reader.readAsDataURL(file);
-          } else {
-            console.warn(`Skipping non-image file: ${file.name}`);
-          }
+              const reader = new FileReader();
+              reader.onload = function (e) {
+                const dataUrl = e.target.result;
+                previewImage.src = dataUrl;
+                imageDataUrlInput.value = dataUrl;
+                previewImage.classList.remove("hidden");
+                previewPlaceholder.classList.add("hidden");
+                filenameDisplay.textContent = `ไฟล์: ${file.name}`;
+                resolve(); // Resolve promise when image is loaded
+              };
+              reader.onerror = reject; // Reject on error
+              reader.readAsDataURL(file);
+            } else {
+              console.warn(`Skipping non-image file: ${file.name}`);
+              resolve(); // Resolve even if skipped to not block Promise.all
+            }
+          });
         });
 
-        // Update numbering and save *after* all new entries are appended
-        updateDamagePointNumbers();
-        saveDataToLocalStorage();
+        // Wait for all file readers to complete
+        Promise.all(filePromises)
+          .then(() => {
+            console.log("All images processed.");
+            updateDamagePointNumbers(); // Update numbers after adding all
+            saveDataToLocalStorage(); // Save once after processing all files
+          })
+          .catch((error) => {
+            console.error("Error processing one or more images:", error);
+            // Still try to update numbers and save what might have loaded
+            updateDamagePointNumbers();
+            saveDataToLocalStorage();
+          });
 
         event.target.value = null; // Reset file input
       });
@@ -618,7 +656,7 @@
           reportDateInput.value = new Date().toISOString().split("T")[0];
           ownerNameInput.value = "";
           damageEntriesContainer.innerHTML = "";
-          addDamageEntry(null, false); // Add one fresh entry back without saving
+          addDamageEntry(null, false);
           updateSignatureDisplay();
           console.log("Saved data cleared.");
           alert("ข้อมูลที่บันทึกไว้ถูกล้างเรียบร้อยแล้ว");
