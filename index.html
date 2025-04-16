@@ -3,20 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>บันทึกความเสียหายจากเหตุแผ่นดินไหว The Parkland Phetkasem 56</title>
+    <title>บันทึกความเสียหายจากเหตุแผ่นดินไหว (แบบโต้ตอบ)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Custom styles for file input */
       .file-input-label {
         cursor: pointer;
         padding: 0.5rem 1rem;
         border: 1px solid #d1d5db; /* gray-300 */
-        border-radius: 0.375rem; /* rounded-md */
+        border-radius: 0.375rem;
         background-color: white;
         transition: background-color 0.2s;
+        display: inline-block;
       }
       .file-input-label:hover {
-        background-color: #f9fafb; /* gray-50 */
+        background-color: #f9fafb;
       }
       /* Hide the default file input */
       input[type="file"] {
@@ -30,7 +30,8 @@
         align-items: center;
         justify-content: center;
         background-color: #f9fafb; /* gray-50 */
-        position: relative; /* Needed for absolute positioning of remove button */
+        position: relative;
+        overflow: hidden; /* Ensure image stays within bounds */
       }
       .image-preview {
         max-width: 100%;
@@ -41,6 +42,7 @@
       .image-preview-placeholder {
         color: #6b7280; /* gray-500 */
         text-align: center;
+        padding: 1rem; /* Add padding */
       }
 
       /* Print-specific styles */
@@ -49,76 +51,91 @@
           font-family: sans-serif;
           margin: 0;
           padding: 0;
-          background-color: white; /* Ensure white background for print */
+          background-color: white;
         }
         .no-print {
-          display: none !important; /* Hide non-printable elements */
+          display: none !important;
         }
         .printable-area {
-          box-shadow: none; /* Remove shadow for print */
+          box-shadow: none;
           border: none;
           padding: 0;
           margin: 0;
           max-width: 100%;
         }
         .damage-entry {
-          page-break-inside: avoid; /* Try to keep entries on one page */
-          border: 1px solid #e5e7eb; /* Add light border for clarity */
+          page-break-inside: avoid;
+          border: 1px solid #e5e7eb;
           margin-bottom: 1rem;
-          background-color: white !important; /* Ensure white background */
+          background-color: white !important;
         }
         input[type="text"],
         textarea,
         input[type="date"] {
           border: none;
-          border-bottom: 1px solid #ccc; /* Simple underline for print */
+          border-bottom: 1px solid #ccc;
           padding: 2px 0;
           background-color: transparent;
-          width: 100%; /* Ensure full width */
+          width: 100%;
+          color: black; /* Ensure text is black for printing */
+        }
+        textarea {
+          height: auto; /* Allow textarea to shrink/grow */
+          min-height: 40px; /* Minimum height */
+          border: 1px solid #ccc; /* Add border for clarity */
+          padding: 4px;
         }
         label {
-          font-weight: bold; /* Make labels stand out */
+          font-weight: bold;
+          color: black;
         }
-        img {
-          max-width: 100% !important;
-          max-height: 150px !important; /* Limit image height in print */
+        img.image-preview {
+          /* Target only preview images */
+          max-width: 90% !important; /* Slightly smaller than container */
+          max-height: 150px !important;
           display: block;
-          border-radius: 0; /* Remove rounding for print if desired */
+          border-radius: 0;
+          margin: 5px auto; /* Center image */
         }
         .image-preview-container {
-          border: 1px solid #ccc; /* Add border to image area */
-          min-height: auto; /* Adjust height */
+          border: 1px solid #ccc;
+          min-height: auto;
           background-color: white !important;
+          padding: 5px; /* Add padding */
         }
         .grid {
-          display: block; /* Stack columns for simpler print layout */
+          display: block;
         }
         .grid > div {
-          margin-bottom: 1rem; /* Add space between stacked elements */
+          margin-bottom: 1rem;
+        }
+        #signature-name-display {
+          color: black; /* Ensure signature name is black */
         }
       }
 
-      /* Style for input fields to look like form lines */
+      /* Style for input fields */
       .form-input {
         border: none;
-        border-bottom: 1px solid #9ca3af; /* Gray border bottom */
+        border-bottom: 1px solid #9ca3af;
         padding: 4px 2px;
         width: 100%;
         outline: none;
         background-color: transparent;
       }
       .form-input:focus {
-        border-bottom: 1px solid #3b82f6; /* Blue border bottom on focus */
+        border-bottom: 1px solid #3b82f6;
       }
       textarea.form-input {
         height: 80px;
         resize: vertical;
-        border: 1px solid #d1d5db; /* Add full border to textarea */
-        border-radius: 0.375rem; /* rounded-md */
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
+        padding: 0.5rem; /* Add padding */
       }
       textarea.form-input:focus {
-        border-color: #3b82f6; /* Blue border on focus */
-        box-shadow: 0 0 0 1px #3b82f6; /* Focus ring */
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 1px #3b82f6;
       }
     </style>
   </head>
@@ -192,7 +209,9 @@
       <div class="mt-12 pt-8 border-t border-gray-300 print:border-t-0">
         <p class="text-sm font-medium text-gray-700 mb-1">ลงชื่อ:</p>
         <div class="mt-2 mb-1 h-12 border-b border-gray-400"></div>
-        <p id="signature-name-display" class="text-sm text-gray-800 mt-1"></p>
+        <p id="signature-name-display" class="text-sm text-gray-800 mt-1">
+          (...................................................)
+        </p>
         <p class="text-sm text-gray-600">เจ้าของกรรมสิทธิ์ห้องชุด/ผู้แทน</p>
       </div>
 
@@ -202,6 +221,12 @@
           class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-150 ease-in-out"
         >
           พิมพ์รายงานนี้
+        </button>
+        <button
+          id="clear-data-button"
+          class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-150 ease-in-out ml-4"
+        >
+          ล้างข้อมูลที่บันทึกไว้
         </button>
       </div>
     </div>
@@ -241,7 +266,7 @@
               type="text"
               name="room[]"
               placeholder="เช่น ห้องนั่งเล่น, ห้องครัว..."
-              class="form-input"
+              class="form-input damage-input"
             />
           </div>
           <div class="mb-4">
@@ -252,7 +277,7 @@
               type="text"
               name="area[]"
               placeholder="เช่น ผนังทิศเหนือ, เพดาน..."
-              class="form-input"
+              class="form-input damage-input"
             />
           </div>
           <div>
@@ -261,7 +286,7 @@
             >
             <textarea
               name="description[]"
-              class="form-input"
+              class="form-input damage-input"
               placeholder="อธิบายลักษณะความเสียหาย..."
             ></textarea>
           </div>
@@ -284,10 +309,14 @@
             />
           </label>
           <p class="image-filename text-xs text-gray-500 mt-1"></p>
+          <input type="hidden" class="image-data-url" />
         </div>
       </div>
     </div>
     <script>
+      // --- Constants ---
+      const LOCAL_STORAGE_KEY = "earthquake-damage-report-data";
+
       // --- DOM Elements ---
       const addDamageButton = document.getElementById("add-damage-point");
       const damageEntriesContainer = document.getElementById(
@@ -297,129 +326,251 @@
         "damage-entry-template",
       );
       const printButton = document.getElementById("print-button");
+      const clearDataButton = document.getElementById("clear-data-button");
+      const unitNumberInput = document.getElementById("unit-number");
+      const reportDateInput = document.getElementById("report-date");
       const ownerNameInput = document.getElementById("owner-name");
       const signatureNameDisplay = document.getElementById(
         "signature-name-display",
       );
 
-      // --- State ---
-      let damagePointCounter = 0;
-
       // --- Functions ---
+
+      // Function to save all form data to localStorage
+      function saveDataToLocalStorage() {
+        const damageEntries = [];
+        damageEntriesContainer
+          .querySelectorAll(".damage-entry")
+          .forEach((entry) => {
+            // Check if the entry is the template itself, skip if it is
+            if (entry.id === "damage-entry-template") return;
+
+            damageEntries.push({
+              room: entry.querySelector('input[name="room[]"]').value,
+              area: entry.querySelector('input[name="area[]"]').value,
+              description: entry.querySelector('textarea[name="description[]"]')
+                .value,
+              imageDataUrl: entry.querySelector(".image-data-url").value, // Get saved data URL
+              imageFilename: entry.querySelector(".image-filename").textContent, // Save filename text
+            });
+          });
+
+        const data = {
+          unitNumber: unitNumberInput.value,
+          reportDate: reportDateInput.value,
+          ownerName: ownerNameInput.value,
+          damageEntries: damageEntries,
+        };
+
+        try {
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
+          console.log("Data saved to localStorage.");
+        } catch (e) {
+          console.error("Error saving data to localStorage:", e);
+          // Handle potential storage full error
+          if (e.name === "QuotaExceededError") {
+            alert(
+              "ไม่สามารถบันทึกข้อมูลได้ เนื่องจากพื้นที่จัดเก็บในเบราว์เซอร์เต็ม อาจเกิดจากรูปภาพมีขนาดใหญ่เกินไป",
+            );
+          }
+        }
+      }
+
+      // Function to load data from localStorage and populate the form
+      function loadDataFromLocalStorage() {
+        const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (!savedData) {
+          console.log("No saved data found. Adding initial entry.");
+          addDamageEntry(); // Add one empty entry if no data saved
+          updateSignatureDisplay(); // Update signature display initially
+          return;
+        }
+
+        try {
+          const data = JSON.parse(savedData);
+          console.log("Loading data from localStorage:", data);
+
+          unitNumberInput.value = data.unitNumber || "";
+          reportDateInput.value =
+            data.reportDate || new Date().toISOString().split("T")[0]; // Default to today if missing
+          ownerNameInput.value = data.ownerName || "";
+
+          // Clear any potential placeholders before loading
+          damageEntriesContainer.innerHTML = "";
+
+          if (data.damageEntries && data.damageEntries.length > 0) {
+            data.damageEntries.forEach((entryData) => {
+              addDamageEntry(entryData); // Pass saved data to add function
+            });
+          } else {
+            addDamageEntry(); // Add one empty entry if saved data had no entries
+          }
+
+          updateDamagePointNumbers(); // Ensure numbering is correct after loading
+          updateSignatureDisplay(); // Update signature display after loading name
+        } catch (e) {
+          console.error("Error loading or parsing data from localStorage:", e);
+          localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear corrupted data
+          addDamageEntry(); // Start fresh
+          updateSignatureDisplay();
+        }
+      }
 
       // Function to update damage point numbers
       function updateDamagePointNumbers() {
-        const entries =
-          damageEntriesContainer.querySelectorAll(".damage-entry");
+        const entries = damageEntriesContainer.querySelectorAll(
+          ".damage-entry:not(#damage-entry-template)",
+        ); // Exclude template
         entries.forEach((entry, index) => {
           const title = entry.querySelector(".damage-point-title");
           if (title) {
             title.textContent = `จุดที่ ${index + 1}`;
           }
-          // Update IDs and labels for uniqueness if necessary (optional but good practice)
-          entry.querySelectorAll("input, textarea, label").forEach((el) => {
-            if (el.id) el.id = el.id.replace(/-\d+$/, `-${index}`);
-            if (el.htmlFor)
-              el.htmlFor = el.htmlFor.replace(/-\d+$/, `-${index}`);
-          });
         });
-        damagePointCounter = entries.length; // Reset counter based on actual entries
       }
 
-      // Function to handle image preview
+      // Function to handle image preview and saving data URL
       function handleImagePreview(fileInput) {
         const file = fileInput.files[0];
-        const entryDiv = fileInput.closest(".damage-entry"); // Find parent entry
+        const entryDiv = fileInput.closest(".damage-entry");
         const previewImage = entryDiv.querySelector(".image-preview");
         const previewPlaceholder = entryDiv.querySelector(
           ".image-preview-placeholder",
         );
         const filenameDisplay = entryDiv.querySelector(".image-filename");
+        const imageDataUrlInput = entryDiv.querySelector(".image-data-url"); // Get hidden input
 
         if (file && file.type.startsWith("image/")) {
           const reader = new FileReader();
 
           reader.onload = function (e) {
-            previewImage.src = e.target.result;
-            previewImage.classList.remove("hidden"); // Show image
-            previewPlaceholder.classList.add("hidden"); // Hide placeholder
+            const dataUrl = e.target.result;
+            previewImage.src = dataUrl;
+            imageDataUrlInput.value = dataUrl; // Store data URL in hidden input
+            previewImage.classList.remove("hidden");
+            previewPlaceholder.classList.add("hidden");
             filenameDisplay.textContent = `ไฟล์: ${file.name}`;
+            saveDataToLocalStorage(); // Save after image is loaded and data URL stored
           };
-          reader.readAsDataURL(file); // Read file as data URL
+          reader.readAsDataURL(file);
         } else {
-          // Reset if no file or not an image
           previewImage.src = "";
+          imageDataUrlInput.value = ""; // Clear stored data URL
           previewImage.classList.add("hidden");
           previewPlaceholder.classList.remove("hidden");
           filenameDisplay.textContent = "";
           if (file) {
-            // If a file was selected but wasn't an image
             alert("กรุณาเลือกไฟล์รูปภาพเท่านั้น (เช่น .jpg, .png, .gif)");
-            fileInput.value = ""; // Clear the invalid file selection
+            fileInput.value = "";
           }
+          saveDataToLocalStorage(); // Save even if image is cleared
         }
       }
 
-      // Function to add a new damage entry
-      function addDamageEntry() {
-        damagePointCounter++; // Increment counter conceptually, but rely on update function
-
+      // Function to add a new damage entry (optionally populating from saved data)
+      function addDamageEntry(data = null) {
         // Clone the template
         const newEntry = damageEntryTemplate.cloneNode(true);
-        newEntry.id = `damage-entry-${damagePointCounter}`; // Give it a unique ID
-        newEntry.style.display = "block"; // Make it visible
+        newEntry.id = ""; // Remove template ID
+        newEntry.style.display = "block";
 
-        // Find the image input and add event listener
+        // Populate fields if data is provided (from localStorage)
+        if (data) {
+          newEntry.querySelector('input[name="room[]"]').value =
+            data.room || "";
+          newEntry.querySelector('input[name="area[]"]').value =
+            data.area || "";
+          newEntry.querySelector('textarea[name="description[]"]').value =
+            data.description || "";
+          newEntry.querySelector(".image-filename").textContent =
+            data.imageFilename || ""; // Restore filename text
+          const imageDataUrl = data.imageDataUrl || "";
+          newEntry.querySelector(".image-data-url").value = imageDataUrl; // Store loaded data URL
+
+          // If there's image data, update the preview
+          if (imageDataUrl) {
+            const previewImage = newEntry.querySelector(".image-preview");
+            const previewPlaceholder = newEntry.querySelector(
+              ".image-preview-placeholder",
+            );
+            previewImage.src = imageDataUrl;
+            previewImage.classList.remove("hidden");
+            previewPlaceholder.classList.add("hidden");
+          }
+        }
+
+        // Add event listeners for the new entry
         const imageInput = newEntry.querySelector(".damage-image-upload");
         imageInput.addEventListener("change", () =>
           handleImagePreview(imageInput),
         );
 
-        // Find the remove button and add event listener
         const removeButton = newEntry.querySelector(".remove-damage-point");
         removeButton.addEventListener("click", () => {
-          newEntry.remove(); // Remove the entry from the DOM
-          updateDamagePointNumbers(); // Renumber remaining entries
+          newEntry.remove();
+          updateDamagePointNumbers();
+          saveDataToLocalStorage(); // Save after removing
+        });
+
+        // Add listeners to text inputs/textarea within this entry to save on change
+        newEntry.querySelectorAll(".damage-input").forEach((input) => {
+          input.addEventListener("input", saveDataToLocalStorage);
         });
 
         // Append to container
         damageEntriesContainer.appendChild(newEntry);
+        updateDamagePointNumbers(); // Renumber immediately after adding
+      }
 
-        // Update all numbers
-        updateDamagePointNumbers();
+      // Function to update the signature display text
+      function updateSignatureDisplay() {
+        signatureNameDisplay.textContent = `(${ownerNameInput.value || "..................................................."})`;
       }
 
       // --- Event Listeners ---
 
       // Add damage point button
-      addDamageButton.addEventListener("click", addDamageEntry);
+      addDamageButton.addEventListener("click", () => {
+        addDamageEntry();
+        saveDataToLocalStorage(); // Save after adding a new blank entry
+      });
 
       // Print button
       printButton.addEventListener("click", () => {
-        // Update signature display before printing
-        signatureNameDisplay.textContent = `(${ownerNameInput.value || "..................................................."})`;
-        window.print(); // Trigger browser print dialog
+        updateSignatureDisplay(); // Ensure name is updated before printing
+        window.print();
       });
 
-      // Update signature display dynamically as user types name
+      // Clear data button
+      clearDataButton.addEventListener("click", () => {
+        if (
+          confirm(
+            "คุณแน่ใจหรือไม่ว่าต้องการล้างข้อมูลที่บันทึกไว้ทั้งหมด? การดำเนินการนี้ไม่สามารถย้อนกลับได้",
+          )
+        ) {
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+          // Clear the form visually
+          unitNumberInput.value = "";
+          reportDateInput.value = new Date().toISOString().split("T")[0]; // Reset date
+          ownerNameInput.value = "";
+          damageEntriesContainer.innerHTML = ""; // Remove all entries
+          addDamageEntry(); // Add one fresh entry back
+          updateSignatureDisplay(); // Reset signature display
+          console.log("Saved data cleared.");
+          alert("ข้อมูลที่บันทึกไว้ถูกล้างเรียบร้อยแล้ว");
+        }
+      });
+
+      // Add listeners to top-level fields to save on change
+      unitNumberInput.addEventListener("input", saveDataToLocalStorage);
+      reportDateInput.addEventListener("change", saveDataToLocalStorage);
       ownerNameInput.addEventListener("input", () => {
-        signatureNameDisplay.textContent = `(${ownerNameInput.value || "..................................................."})`;
+        updateSignatureDisplay(); // Update display immediately
+        saveDataToLocalStorage(); // Then save
       });
 
       // --- Initial Setup ---
-
-      // Set default date to today
-      const reportDateInput = document.getElementById("report-date");
-      if (!reportDateInput.value) {
-        const today = new Date().toISOString().split("T")[0];
-        reportDateInput.value = today;
-      }
-
-      // Add one initial damage entry when the page loads
-      addDamageEntry();
-
-      // Initialize signature display
-      signatureNameDisplay.textContent = `(${ownerNameInput.value || "..................................................."})`;
+      document.addEventListener("DOMContentLoaded", loadDataFromLocalStorage); // Load data when the page is ready
     </script>
   </body>
 </html>
