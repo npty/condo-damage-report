@@ -64,31 +64,26 @@
           margin: 0;
           max-width: 100%;
         }
-        /* --- REVISED AGAIN FOR PAGE ENTRIES --- */
         .damage-entry {
           page-break-inside: avoid; /* Try to keep content together */
           page-break-after: always; /* Force break after each entry */
           border: none;
           margin-bottom: 0;
           padding-bottom: 1cm; /* Add padding at bottom */
-          /* REMOVED min-height: 90vh */
           display: block; /* Revert to block layout for simplicity */
           background-color: white !important;
         }
         .damage-entry:last-of-type {
           page-break-after: auto;
         }
-        /* Use default block flow for grid and its children */
         .damage-entry .grid {
           display: block; /* Ensure block display */
         }
         .damage-entry .grid > div {
           margin-bottom: 0.5rem;
-          /* REMOVED flex-grow */
         }
         .damage-entry .grid > div:last-child {
           /* Image parent div */
-          /* REMOVED flex properties */
         }
 
         input[type="text"],
@@ -119,7 +114,6 @@
           display: flex; /* Keep flex for centering */
           align-items: center;
           justify-content: center;
-          /* REMOVED flex-grow */
           overflow: hidden;
           min-height: 150px; /* Optional: ensure some minimum space */
         }
@@ -127,7 +121,6 @@
         img.image-preview {
           max-width: 100% !important;
           width: auto;
-          /* Reintroduce max-height, less aggressive */
           max-height: 60vh !important; /* Limit height relative to viewport */
           object-fit: contain !important;
           display: block;
@@ -141,7 +134,6 @@
         #damage-entry-template {
           display: none !important;
         }
-        /* --- END REVISION --- */
       }
 
       /* Style for input fields */
@@ -176,6 +168,8 @@
       <h1 class="text-2xl font-bold text-center mb-6">
         บันทึกความเสียหายจากเหตุแผ่นดินไหว
       </h1>
+
+      <h2 class="text-xl font-bold mb-6">อาคาร The Parkland Phetkasem 56</h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
@@ -223,7 +217,7 @@
 
       <hr class="my-8 border-gray-300 print:hidden" />
 
-      <div id="damage-entries-container">{/* Entries added here */}</div>
+      <div id="damage-entries-container"></div>
 
       <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4 no-print">
         <button
@@ -384,6 +378,7 @@
 
       // --- Functions ---
 
+      // MODIFIED: Function to save only text data to localStorage
       function saveDataToLocalStorage() {
         const damageEntries = [];
         damageEntriesContainer
@@ -394,8 +389,9 @@
               area: entry.querySelector('input[name="area[]"]').value,
               description: entry.querySelector('textarea[name="description[]"]')
                 .value,
-              imageDataUrl: entry.querySelector(".image-data-url").value,
-              imageFilename: entry.querySelector(".image-filename").textContent,
+              // REMOVED: Do not save image data or filename
+              // imageDataUrl: entry.querySelector('.image-data-url').value,
+              // imageFilename: entry.querySelector('.image-filename').textContent
             });
           });
 
@@ -403,57 +399,57 @@
           unitNumber: unitNumberInput.value,
           reportDate: reportDateInput.value,
           ownerName: ownerNameInput.value,
-          damageEntries: damageEntries,
+          damageEntries: damageEntries, // Only contains text data now
         };
 
         try {
+          // Data size is now much smaller
           localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
-          console.log("Data saved to localStorage.");
+          console.log("Text data saved to localStorage.");
         } catch (e) {
+          // Quota error is now much less likely, but keep basic error handling
           console.error("Error saving data to localStorage:", e);
-          if (e.name === "QuotaExceededError") {
-            alert(
-              "ไม่สามารถบันทึกข้อมูลได้ เนื่องจากพื้นที่จัดเก็บในเบราว์เซอร์เต็ม อาจเกิดจากรูปภาพมีขนาดใหญ่เกินไป",
-            );
-          }
+          alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
         }
       }
 
+      // MODIFIED: Function to load only text data from localStorage
       function loadDataFromLocalStorage() {
         const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (!savedData) {
           console.log("No saved data found. Adding initial entry.");
-          addDamageEntry(null, false);
+          addDamageEntry(null, false); // Add one empty entry without saving
           updateSignatureDisplay();
           return;
         }
 
         try {
           const data = JSON.parse(savedData);
-          console.log("Loading data from localStorage:", data);
+          console.log("Loading text data from localStorage:", data);
 
           unitNumberInput.value = data.unitNumber || "";
           reportDateInput.value =
             data.reportDate || new Date().toISOString().split("T")[0];
           ownerNameInput.value = data.ownerName || "";
 
-          damageEntriesContainer.innerHTML = "";
+          damageEntriesContainer.innerHTML = ""; // Clear container before loading
 
           if (data.damageEntries && data.damageEntries.length > 0) {
             data.damageEntries.forEach((entryData) => {
+              // Pass only text data, image fields will remain empty
               addDamageEntry(entryData, false);
             });
           } else {
-            addDamageEntry(null, false);
+            addDamageEntry(null, false); // Add one empty entry if saved data had none
           }
 
           updateDamagePointNumbers();
           updateSignatureDisplay();
         } catch (e) {
           console.error("Error loading or parsing data from localStorage:", e);
-          localStorage.removeItem(LOCAL_STORAGE_KEY);
+          localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear potentially corrupted data
           damageEntriesContainer.innerHTML = "";
-          addDamageEntry(null, false);
+          addDamageEntry(null, false); // Start fresh
           updateSignatureDisplay();
         }
       }
@@ -470,7 +466,9 @@
         });
       }
 
-      function handleImagePreview(fileInput, shouldSave = true) {
+      // MODIFIED: Image preview function no longer triggers save itself
+      function handleImagePreview(fileInput) {
+        // Removed shouldSave parameter
         const file = fileInput.files[0];
         const entryDiv = fileInput.closest(".damage-entry");
         if (!entryDiv) return;
@@ -480,42 +478,44 @@
           ".image-preview-placeholder",
         );
         const filenameDisplay = entryDiv.querySelector(".image-filename");
-        const imageDataUrlInput = entryDiv.querySelector(".image-data-url");
+        // REMOVED: No longer need imageDataUrlInput for saving
+        // const imageDataUrlInput = entryDiv.querySelector('.image-data-url');
 
         if (file && file.type.startsWith("image/")) {
           const reader = new FileReader();
           reader.onload = function (e) {
             const dataUrl = e.target.result;
             previewImage.src = dataUrl;
-            imageDataUrlInput.value = dataUrl;
+            // REMOVED: imageDataUrlInput.value = dataUrl;
             previewImage.classList.remove("hidden");
             previewPlaceholder.classList.add("hidden");
-            filenameDisplay.textContent = `ไฟล์: ${file.name}`;
-            if (shouldSave) saveDataToLocalStorage();
+            filenameDisplay.textContent = `ไฟล์: ${file.name}`; // Still show filename for current session
+            // REMOVED: saveDataToLocalStorage(); // Save is triggered by text input changes now
           };
           reader.readAsDataURL(file);
         } else {
           previewImage.src = "";
-          imageDataUrlInput.value = "";
+          // REMOVED: imageDataUrlInput.value = '';
           previewImage.classList.add("hidden");
           previewPlaceholder.classList.remove("hidden");
-          filenameDisplay.textContent = "";
+          filenameDisplay.textContent = ""; // Clear filename display
           if (file) {
             alert("กรุณาเลือกไฟล์รูปภาพเท่านั้น (เช่น .jpg, .png, .gif)");
             fileInput.value = "";
           }
-          if (shouldSave) saveDataToLocalStorage();
+          // REMOVED: saveDataToLocalStorage();
         }
       }
 
+      // MODIFIED: Add damage entry function - populates text, leaves image blank on load
       function addDamageEntry(data = null, shouldSave = true) {
         const newEntry = damageEntryTemplate.cloneNode(true);
         newEntry.id = "";
-        newEntry.style.display = "block"; // Make visible by default
+        newEntry.style.display = "block";
 
-        // Check if it's the template node itself before processing
         if (newEntry.id === "damage-entry-template") return null;
 
+        // Populate only text fields if data is provided (from localStorage)
         if (data) {
           newEntry.querySelector('input[name="room[]"]').value =
             data.room || "";
@@ -523,41 +523,31 @@
             data.area || "";
           newEntry.querySelector('textarea[name="description[]"]').value =
             data.description || "";
-          newEntry.querySelector(".image-filename").textContent =
-            data.imageFilename || "";
-          const imageDataUrl = data.imageDataUrl || "";
-          newEntry.querySelector(".image-data-url").value = imageDataUrl;
-
-          if (imageDataUrl) {
-            const previewImage = newEntry.querySelector(".image-preview");
-            const previewPlaceholder = newEntry.querySelector(
-              ".image-preview-placeholder",
-            );
-            previewImage.src = imageDataUrl;
-            previewImage.classList.remove("hidden");
-            previewPlaceholder.classList.add("hidden");
-          }
+          // REMOVED: Logic to restore image preview from saved data
         }
 
+        // Add event listeners
         const imageInput = newEntry.querySelector(".damage-image-upload");
+        // Pass 'false' to handleImagePreview as save is triggered by text changes
         imageInput.addEventListener("change", () =>
-          handleImagePreview(imageInput, true),
+          handleImagePreview(imageInput),
         );
 
         const removeButton = newEntry.querySelector(".remove-damage-point");
         removeButton.addEventListener("click", () => {
           newEntry.remove();
           updateDamagePointNumbers();
-          saveDataToLocalStorage();
+          saveDataToLocalStorage(); // Save after removing (text data)
         });
 
+        // Add listeners to text inputs/textarea to save on change
         newEntry.querySelectorAll(".damage-input").forEach((input) => {
           input.addEventListener("input", saveDataToLocalStorage);
         });
 
         damageEntriesContainer.appendChild(newEntry);
 
-        // Update numbers after adding, only save if requested
+        // Update numbers after adding, save text data if requested
         updateDamagePointNumbers();
         if (shouldSave) {
           saveDataToLocalStorage();
@@ -572,7 +562,7 @@
       // --- Event Listeners ---
 
       addDamageButton.addEventListener("click", () => {
-        addDamageEntry(null, true);
+        addDamageEntry(null, true); // Add blank entry, save (empty text) state
       });
 
       addMultipleButton.addEventListener("click", () => {
@@ -588,11 +578,11 @@
           `Processing ${files.length} files for multiple entry creation.`,
         );
 
-        // Use Promise.all to wait for all images to be processed before saving
         const filePromises = Array.from(files).map((file) => {
           return new Promise((resolve, reject) => {
             if (file.type.startsWith("image/")) {
-              const newEntryElement = addDamageEntry(null, false); // Add entry but don't save yet
+              // Add entry but don't save text state yet
+              const newEntryElement = addDamageEntry(null, false);
 
               const previewImage =
                 newEntryElement.querySelector(".image-preview");
@@ -601,40 +591,37 @@
               );
               const filenameDisplay =
                 newEntryElement.querySelector(".image-filename");
-              const imageDataUrlInput =
-                newEntryElement.querySelector(".image-data-url");
 
               const reader = new FileReader();
               reader.onload = function (e) {
                 const dataUrl = e.target.result;
                 previewImage.src = dataUrl;
-                imageDataUrlInput.value = dataUrl;
                 previewImage.classList.remove("hidden");
                 previewPlaceholder.classList.add("hidden");
                 filenameDisplay.textContent = `ไฟล์: ${file.name}`;
-                resolve(); // Resolve promise when image is loaded
+                resolve();
               };
-              reader.onerror = reject; // Reject on error
+              reader.onerror = reject;
               reader.readAsDataURL(file);
             } else {
               console.warn(`Skipping non-image file: ${file.name}`);
-              resolve(); // Resolve even if skipped to not block Promise.all
+              resolve();
             }
           });
         });
 
-        // Wait for all file readers to complete
+        // Wait for all file readers to complete (just for console log)
         Promise.all(filePromises)
           .then(() => {
-            console.log("All images processed.");
+            console.log("All images processed for preview.");
             updateDamagePointNumbers(); // Update numbers after adding all
-            saveDataToLocalStorage(); // Save once after processing all files
+            // Save the current text state (which will include the new blank entries)
+            saveDataToLocalStorage();
           })
           .catch((error) => {
             console.error("Error processing one or more images:", error);
-            // Still try to update numbers and save what might have loaded
             updateDamagePointNumbers();
-            saveDataToLocalStorage();
+            saveDataToLocalStorage(); // Still save text state
           });
 
         event.target.value = null; // Reset file input
@@ -656,13 +643,14 @@
           reportDateInput.value = new Date().toISOString().split("T")[0];
           ownerNameInput.value = "";
           damageEntriesContainer.innerHTML = "";
-          addDamageEntry(null, false);
+          addDamageEntry(null, false); // Add one fresh entry back without saving
           updateSignatureDisplay();
           console.log("Saved data cleared.");
           alert("ข้อมูลที่บันทึกไว้ถูกล้างเรียบร้อยแล้ว");
         }
       });
 
+      // Listeners trigger save for text data only
       unitNumberInput.addEventListener("input", saveDataToLocalStorage);
       reportDateInput.addEventListener("change", saveDataToLocalStorage);
       ownerNameInput.addEventListener("input", () => {
@@ -671,7 +659,7 @@
       });
 
       // --- Initial Setup ---
-      document.addEventListener("DOMContentLoaded", loadDataFromLocalStorage);
+      document.addEventListener("DOMContentLoaded", loadDataFromLocalStorage); // Loads text data only
     </script>
   </body>
 </html>
