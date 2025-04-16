@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>บันทึกความเสียหายจากเหตุแผ่นดินไหว The Parkland Phetkasem 56</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Custom styles for file input */
+      .file-input-label {
+        cursor: pointer;
+        padding: 0.5rem 1rem;
+        border: 1px solid #d1d5db; /* gray-300 */
+        border-radius: 0.375rem; /* rounded-md */
+        background-color: white;
+        transition: background-color 0.2s;
+      }
+      .file-input-label:hover {
+        background-color: #f9fafb; /* gray-50 */
+      }
+      /* Hide the default file input */
+      input[type="file"] {
+        display: none;
+      }
+      /* Image preview container */
+      .image-preview-container {
+        border: 2px dashed #d1d5db; /* gray-300 */
+        min-height: 10rem; /* h-40 */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f9fafb; /* gray-50 */
+        position: relative; /* Needed for absolute positioning of remove button */
+      }
+      .image-preview {
+        max-width: 100%;
+        max-height: 16rem; /* h-64 */
+        object-fit: contain;
+        border-radius: 0.375rem; /* rounded-md */
+      }
+      .image-preview-placeholder {
+        color: #6b7280; /* gray-500 */
+        text-align: center;
+      }
+
+      /* Print-specific styles */
+      @media print {
+        body {
+          font-family: sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: white; /* Ensure white background for print */
+        }
+        .no-print {
+          display: none !important; /* Hide non-printable elements */
+        }
+        .printable-area {
+          box-shadow: none; /* Remove shadow for print */
+          border: none;
+          padding: 0;
+          margin: 0;
+          max-width: 100%;
+        }
+        .damage-entry {
+          page-break-inside: avoid; /* Try to keep entries on one page */
+          border: 1px solid #e5e7eb; /* Add light border for clarity */
+          margin-bottom: 1rem;
+          background-color: white !important; /* Ensure white background */
+        }
+        input[type="text"],
+        textarea,
+        input[type="date"] {
+          border: none;
+          border-bottom: 1px solid #ccc; /* Simple underline for print */
+          padding: 2px 0;
+          background-color: transparent;
+          width: 100%; /* Ensure full width */
+        }
+        label {
+          font-weight: bold; /* Make labels stand out */
+        }
+        img {
+          max-width: 100% !important;
+          max-height: 150px !important; /* Limit image height in print */
+          display: block;
+          border-radius: 0; /* Remove rounding for print if desired */
+        }
+        .image-preview-container {
+          border: 1px solid #ccc; /* Add border to image area */
+          min-height: auto; /* Adjust height */
+          background-color: white !important;
+        }
+        .grid {
+          display: block; /* Stack columns for simpler print layout */
+        }
+        .grid > div {
+          margin-bottom: 1rem; /* Add space between stacked elements */
+        }
+      }
+
+      /* Style for input fields to look like form lines */
+      .form-input {
+        border: none;
+        border-bottom: 1px solid #9ca3af; /* Gray border bottom */
+        padding: 4px 2px;
+        width: 100%;
+        outline: none;
+        background-color: transparent;
+      }
+      .form-input:focus {
+        border-bottom: 1px solid #3b82f6; /* Blue border bottom on focus */
+      }
+      textarea.form-input {
+        height: 80px;
+        resize: vertical;
+        border: 1px solid #d1d5db; /* Add full border to textarea */
+        border-radius: 0.375rem; /* rounded-md */
+      }
+      textarea.form-input:focus {
+        border-color: #3b82f6; /* Blue border on focus */
+        box-shadow: 0 0 0 1px #3b82f6; /* Focus ring */
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 p-4 md:p-8 font-sans">
+    <div
+      class="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-lg shadow-md printable-area"
+    >
+      <h1 class="text-2xl font-bold text-center mb-6">
+        บันทึกความเสียหายจากเหตุแผ่นดินไหว
+      </h1>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label
+            for="unit-number"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >ของห้องชุด เลขที่:</label
+          >
+          <input
+            type="text"
+            id="unit-number"
+            name="unit-number"
+            class="form-input"
+            placeholder="กรอกเลขที่ห้องชุด..."
+          />
+        </div>
+        <div>
+          <label
+            for="report-date"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >วันที่รายงาน:</label
+          >
+          <input
+            type="date"
+            id="report-date"
+            name="report-date"
+            class="form-input"
+          />
+        </div>
+      </div>
+      <div>
+        <label
+          for="owner-name"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >ชื่อเจ้าของกรรมสิทธิ์ห้องชุด/ผู้แทน:</label
+        >
+        <input
+          type="text"
+          id="owner-name"
+          name="owner-name"
+          class="form-input mb-8"
+          placeholder="กรอกชื่อ..."
+        />
+      </div>
+
+      <hr class="my-8 border-gray-300" />
+
+      <div id="damage-entries-container"></div>
+
+      <div class="mt-6 text-center no-print">
+        <button
+          id="add-damage-point"
+          class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow transition duration-150 ease-in-out"
+        >
+          + เพิ่มจุดความเสียหาย
+        </button>
+      </div>
+
+      <hr class="my-8 border-gray-300" />
+
+      <div class="mt-12 pt-8 border-t border-gray-300 print:border-t-0">
+        <p class="text-sm font-medium text-gray-700 mb-1">ลงชื่อ:</p>
+        <div class="mt-2 mb-1 h-12 border-b border-gray-400"></div>
+        <p id="signature-name-display" class="text-sm text-gray-800 mt-1"></p>
+        <p class="text-sm text-gray-600">เจ้าของกรรมสิทธิ์ห้องชุด/ผู้แทน</p>
+      </div>
+
+      <div class="mt-8 text-center no-print">
+        <button
+          id="print-button"
+          class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition duration-150 ease-in-out"
+        >
+          พิมพ์รายงานนี้
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="damage-entry-template"
+      class="damage-entry mb-10 p-4 border border-gray-200 rounded-md bg-gray-50"
+      style="display: none"
+    >
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-lg font-semibold damage-point-title">จุดที่ X</h2>
+        <button
+          class="remove-damage-point text-red-500 hover:text-red-700 no-print"
+          title="ลบจุดนี้"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >ห้อง:</label
+            >
+            <input
+              type="text"
+              name="room[]"
+              placeholder="เช่น ห้องนั่งเล่น, ห้องครัว..."
+              class="form-input"
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >บริเวณความเสียหาย:</label
+            >
+            <input
+              type="text"
+              name="area[]"
+              placeholder="เช่น ผนังทิศเหนือ, เพดาน..."
+              class="form-input"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >สภาพความเสียหาย:</label
+            >
+            <textarea
+              name="description[]"
+              class="form-input"
+              placeholder="อธิบายลักษณะความเสียหาย..."
+            ></textarea>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >รูปภาพประกอบ:</label
+          >
+          <div class="image-preview-container rounded-md mb-2">
+            <img src="" alt="Image Preview" class="image-preview hidden" />
+            <p class="image-preview-placeholder">ยังไม่มีรูปภาพ</p>
+          </div>
+          <label class="file-input-label text-sm no-print">
+            <span>เลือกรูปภาพ</span>
+            <input
+              type="file"
+              name="image[]"
+              accept="image/*"
+              class="damage-image-upload"
+            />
+          </label>
+          <p class="image-filename text-xs text-gray-500 mt-1"></p>
+        </div>
+      </div>
+    </div>
+    <script>
+      // --- DOM Elements ---
+      const addDamageButton = document.getElementById("add-damage-point");
+      const damageEntriesContainer = document.getElementById(
+        "damage-entries-container",
+      );
+      const damageEntryTemplate = document.getElementById(
+        "damage-entry-template",
+      );
+      const printButton = document.getElementById("print-button");
+      const ownerNameInput = document.getElementById("owner-name");
+      const signatureNameDisplay = document.getElementById(
+        "signature-name-display",
+      );
+
+      // --- State ---
+      let damagePointCounter = 0;
+
+      // --- Functions ---
+
+      // Function to update damage point numbers
+      function updateDamagePointNumbers() {
+        const entries =
+          damageEntriesContainer.querySelectorAll(".damage-entry");
+        entries.forEach((entry, index) => {
+          const title = entry.querySelector(".damage-point-title");
+          if (title) {
+            title.textContent = `จุดที่ ${index + 1}`;
+          }
+          // Update IDs and labels for uniqueness if necessary (optional but good practice)
+          entry.querySelectorAll("input, textarea, label").forEach((el) => {
+            if (el.id) el.id = el.id.replace(/-\d+$/, `-${index}`);
+            if (el.htmlFor)
+              el.htmlFor = el.htmlFor.replace(/-\d+$/, `-${index}`);
+          });
+        });
+        damagePointCounter = entries.length; // Reset counter based on actual entries
+      }
+
+      // Function to handle image preview
+      function handleImagePreview(fileInput) {
+        const file = fileInput.files[0];
+        const entryDiv = fileInput.closest(".damage-entry"); // Find parent entry
+        const previewImage = entryDiv.querySelector(".image-preview");
+        const previewPlaceholder = entryDiv.querySelector(
+          ".image-preview-placeholder",
+        );
+        const filenameDisplay = entryDiv.querySelector(".image-filename");
+
+        if (file && file.type.startsWith("image/")) {
+          const reader = new FileReader();
+
+          reader.onload = function (e) {
+            previewImage.src = e.target.result;
+            previewImage.classList.remove("hidden"); // Show image
+            previewPlaceholder.classList.add("hidden"); // Hide placeholder
+            filenameDisplay.textContent = `ไฟล์: ${file.name}`;
+          };
+          reader.readAsDataURL(file); // Read file as data URL
+        } else {
+          // Reset if no file or not an image
+          previewImage.src = "";
+          previewImage.classList.add("hidden");
+          previewPlaceholder.classList.remove("hidden");
+          filenameDisplay.textContent = "";
+          if (file) {
+            // If a file was selected but wasn't an image
+            alert("กรุณาเลือกไฟล์รูปภาพเท่านั้น (เช่น .jpg, .png, .gif)");
+            fileInput.value = ""; // Clear the invalid file selection
+          }
+        }
+      }
+
+      // Function to add a new damage entry
+      function addDamageEntry() {
+        damagePointCounter++; // Increment counter conceptually, but rely on update function
+
+        // Clone the template
+        const newEntry = damageEntryTemplate.cloneNode(true);
+        newEntry.id = `damage-entry-${damagePointCounter}`; // Give it a unique ID
+        newEntry.style.display = "block"; // Make it visible
+
+        // Find the image input and add event listener
+        const imageInput = newEntry.querySelector(".damage-image-upload");
+        imageInput.addEventListener("change", () =>
+          handleImagePreview(imageInput),
+        );
+
+        // Find the remove button and add event listener
+        const removeButton = newEntry.querySelector(".remove-damage-point");
+        removeButton.addEventListener("click", () => {
+          newEntry.remove(); // Remove the entry from the DOM
+          updateDamagePointNumbers(); // Renumber remaining entries
+        });
+
+        // Append to container
+        damageEntriesContainer.appendChild(newEntry);
+
+        // Update all numbers
+        updateDamagePointNumbers();
+      }
+
+      // --- Event Listeners ---
+
+      // Add damage point button
+      addDamageButton.addEventListener("click", addDamageEntry);
+
+      // Print button
+      printButton.addEventListener("click", () => {
+        // Update signature display before printing
+        signatureNameDisplay.textContent = `(${ownerNameInput.value || "..................................................."})`;
+        window.print(); // Trigger browser print dialog
+      });
+
+      // Update signature display dynamically as user types name
+      ownerNameInput.addEventListener("input", () => {
+        signatureNameDisplay.textContent = `(${ownerNameInput.value || "..................................................."})`;
+      });
+
+      // --- Initial Setup ---
+
+      // Set default date to today
+      const reportDateInput = document.getElementById("report-date");
+      if (!reportDateInput.value) {
+        const today = new Date().toISOString().split("T")[0];
+        reportDateInput.value = today;
+      }
+
+      // Add one initial damage entry when the page loads
+      addDamageEntry();
+
+      // Initialize signature display
+      signatureNameDisplay.textContent = `(${ownerNameInput.value || "..................................................."})`;
+    </script>
+  </body>
+</html>
