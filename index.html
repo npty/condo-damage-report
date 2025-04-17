@@ -195,19 +195,35 @@
           />
         </div>
       </div>
-      <div>
-        <label
-          for="owner-name"
-          class="block text-sm font-medium text-gray-700 mb-1"
-          >ชื่อเจ้าของกรรมสิทธิ์ห้องชุด/ผู้แทน:</label
-        >
-        <input
-          type="text"
-          id="owner-name"
-          name="owner-name"
-          class="form-input mb-8"
-          placeholder="กรอกชื่อ..."
-        />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div>
+          <label
+            for="owner-name"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >ชื่อเจ้าของกรรมสิทธิ์ห้องชุด/ผู้แทน:</label
+          >
+          <input
+            type="text"
+            id="owner-name"
+            name="owner-name"
+            class="form-input mb-8"
+            placeholder="กรอกชื่อ..."
+          />
+        </div>
+        <div>
+          <label
+            for="room-size"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >ขนาดห้องโดยประมาณ (ตร.ม.)</label
+          >
+          <input
+            type="number"
+            id="room-size"
+            name="room-size"
+            class="form-input mb-8"
+            placeholder="กรอกขนาดห้องโดยประมาณ..."
+          />
+        </div>
       </div>
 
       <hr class="my-8 border-gray-300 print:hidden" />
@@ -367,6 +383,7 @@
       const unitNumberInput = document.getElementById("unit-number");
       const reportDateInput = document.getElementById("report-date");
       const ownerNameInput = document.getElementById("owner-name");
+      const roomSizeInput = document.getElementById("room-size");
       const signatureNameDisplay = document.getElementById(
         "signature-name-display",
       );
@@ -384,7 +401,6 @@
               area: entry.querySelector('input[name="area[]"]').value,
               description: entry.querySelector('textarea[name="description[]"]')
                 .value,
-              // REMOVED: Do not save image data or filename
               // imageDataUrl: entry.querySelector('.image-data-url').value,
               // imageFilename: entry.querySelector('.image-filename').textContent
             });
@@ -394,6 +410,7 @@
           unitNumber: unitNumberInput.value,
           reportDate: reportDateInput.value,
           ownerName: ownerNameInput.value,
+          roomSize: roomSizeInput.value,
           damageEntries: damageEntries, // Only contains text data now
         };
 
@@ -426,6 +443,7 @@
           reportDateInput.value =
             data.reportDate || new Date().toISOString().split("T")[0];
           ownerNameInput.value = data.ownerName || "";
+          roomSizeInput.value = data.roomSize || "";
 
           damageEntriesContainer.innerHTML = ""; // Clear container before loading
 
@@ -648,6 +666,7 @@
       // Listeners trigger save for text data only
       unitNumberInput.addEventListener("input", saveDataToLocalStorage);
       reportDateInput.addEventListener("change", saveDataToLocalStorage);
+      roomSizeInput.addEventListener("input", saveDataToLocalStorage);
       ownerNameInput.addEventListener("input", () => {
         updateSignatureDisplay();
         saveDataToLocalStorage();
