@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>บันทึกความเสียหายจากเหตุแผ่นดินไหว</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // This placeholder will be replaced by the Node.js server
+      window.BUILDING_NAME = "%%BUILDING_NAME%%";
+      console.log("Injected window.BUILDING_NAME:", window.BUILDING_NAME);
+    </script>
     <style>
       .file-input-label {
         cursor: pointer;
@@ -164,7 +169,10 @@
         บันทึกความเสียหายจากเหตุแผ่นดินไหว
       </h1>
 
-      <h2 class="text-xl font-bold mb-6">อาคารเดอะพาร์คแลนด์ เพชรเกษม 56</h2>
+      <!-- Container for dynamic building name -->
+      <div id="building-name-container" class="mb-6">
+        <!-- Content (H2 or Input) will be injected by JavaScript -->
+      </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
@@ -414,6 +422,14 @@
           damageEntries: damageEntries, // Only contains text data now
         };
 
+        // Add building name if input exists
+        const buildingNameInput = document.getElementById(
+          "building-name-input",
+        );
+        if (buildingNameInput) {
+          data.buildingName = buildingNameInput.value;
+        }
+
         try {
           // Data size is now much smaller
           localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(data));
@@ -427,17 +443,67 @@
 
       // MODIFIED: Function to load only text data from localStorage
       function loadDataFromLocalStorage() {
+        const buildingContainer = document.getElementById(
+          "building-name-container",
+        );
+        buildingContainer.innerHTML = ""; // Clear container
+
         const savedData = localStorage.getItem(LOCAL_STORAGE_KEY);
+        let data = {}; // Initialize data object
+
+        // --- Render Building Name (Conditionally) ---
+        if (window.BUILDING_NAME) {
+          // If BUILDING_NAME is provided (e.g., via server injection)
+          const h2 = document.createElement("h2");
+          h2.className = "text-xl font-bold";
+          h2.textContent = `อาคาร ${window.BUILDING_NAME}`;
+          buildingContainer.appendChild(h2);
+          console.log("Using provided building name:", window.BUILDING_NAME);
+        } else {
+          // If BUILDING_NAME is not provided, create an input field
+          console.log("BUILDING_NAME not provided, creating input field.");
+          const label = document.createElement("label");
+          label.htmlFor = "building-name-input";
+          label.className = "block text-sm font-medium text-gray-700 mb-1";
+          label.textContent = "ชื่ออาคาร:";
+
+          const input = document.createElement("input");
+          input.type = "text";
+          input.id = "building-name-input";
+          input.name = "building-name";
+          // Apply similar visual weight as the original H2, using form-input base
+          input.className = "form-input text-xl font-bold";
+          input.placeholder = "กรอกชื่ออาคาร...";
+
+          // Add listener to save when this input changes
+          input.addEventListener("input", saveDataToLocalStorage);
+
+          buildingContainer.appendChild(label);
+          buildingContainer.appendChild(input);
+        }
+        // --- End Building Name Rendering ---
+
         if (!savedData) {
           console.log("No saved data found. Adding initial entry.");
+          // Set default date even if no data
+          reportDateInput.value = new Date().toISOString().split("T")[0];
+          // Add initial damage entry
           addDamageEntry(null, false); // Add one empty entry without saving
           updateSignatureDisplay();
           return;
         }
 
         try {
-          const data = JSON.parse(savedData);
+          data = JSON.parse(savedData); // Parse saved data here
           console.log("Loading text data from localStorage:", data);
+
+          // Load building name ONLY if the input exists (meaning window.BUILDING_NAME was not set)
+          const buildingNameInput = document.getElementById(
+            "building-name-input",
+          );
+          if (buildingNameInput) {
+            buildingNameInput.value = data.buildingName || "";
+          }
 
           unitNumberInput.value = data.unitNumber || "";
           reportDateInput.value =
@@ -655,6 +721,14 @@
           unitNumberInput.value = "";
           reportDateInput.value = new Date().toISOString().split("T")[0];
           ownerNameInput.value = "";
+          roomSizeInput.value = ""; // Clear room size too
+          // Clear building name input if it exists
+          const buildingNameInput = document.getElementById(
+            "building-name-input",
+          );
+          if (buildingNameInput) {
+            buildingNameInput.value = "";
+          }
           damageEntriesContainer.innerHTML = "";
           addDamageEntry(null, false); // Add one fresh entry back without saving
           updateSignatureDisplay();
