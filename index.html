@@ -6,47 +6,43 @@
     <title>บันทึกความเสียหายจากเหตุแผ่นดินไหว</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-      /* Custom styles for file input */
       .file-input-label {
         cursor: pointer;
         padding: 0.5rem 1rem;
-        border: 1px solid #d1d5db; /* gray-300 */
-        border-radius: 0.375rem; /* rounded-md */
+        border: 1px solid #d1d5db;
+        border-radius: 0.375rem;
         background-color: white;
         transition: background-color 0.2s;
-        display: inline-block; /* Ensure label behaves like a button */
+        display: inline-block;
       }
       .file-input-label:hover {
-        background-color: #f9fafb; /* gray-50 */
+        background-color: #f9fafb;
       }
-      /* Hide the default file input */
       input[type="file"] {
         display: none;
       }
-      /* Image preview container */
       .image-preview-container {
-        border: 2px dashed #d1d5db; /* gray-300 */
-        min-height: 10rem; /* h-40 */
+        border: 2px dashed #d1d5db;
+        min-height: 10rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #f9fafb; /* gray-50 */
+        background-color: #f9fafb;
         position: relative;
-        overflow: hidden; /* Ensure image stays within bounds */
+        overflow: hidden;
       }
       .image-preview {
         max-width: 100%;
-        max-height: 16rem; /* h-64 */
+        max-height: 16rem;
         object-fit: contain;
-        border-radius: 0.375rem; /* rounded-md */
+        border-radius: 0.375rem;
       }
       .image-preview-placeholder {
-        color: #6b7280; /* gray-500 */
+        color: #6b7280;
         text-align: center;
-        padding: 1rem; /* Add padding */
+        padding: 1rem;
       }
 
-      /* Print-specific styles */
       @media print {
         body {
           font-family: sans-serif;
@@ -68,23 +64,22 @@
           page-break-inside: avoid;
           page-break-after: always;
           border: none !important;
-          box-shadow: none !important; /* Ensure shadow is removed */
+          box-shadow: none !important;
           margin-bottom: 0;
-          padding-bottom: 1cm; /* Add padding at bottom */
-          display: block; /* Revert to block layout for simplicity */
+          padding-bottom: 1cm;
+          display: block;
           background-color: white !important;
         }
         .damage-entry:last-of-type {
           page-break-after: auto;
         }
         .damage-entry .grid {
-          display: block; /* Ensure block display */
+          display: block;
         }
         .damage-entry .grid > div {
           margin-bottom: 0.5rem;
         }
         .damage-entry .grid > div:last-child {
-          /* Image parent div */
         }
 
         input[type="text"],
@@ -112,17 +107,17 @@
           border: 1px solid #ccc;
           background-color: white !important;
           padding: 5px;
-          display: flex; /* Keep flex for centering */
+          display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          min-height: 150px; /* Optional: ensure some minimum space */
+          min-height: 150px;
         }
 
         img.image-preview {
           max-width: 100% !important;
           width: auto;
-          max-height: 60vh !important; /* Limit height relative to viewport */
+          max-height: 60vh !important;
           object-fit: contain !important;
           display: block;
           border-radius: 0;
@@ -137,7 +132,6 @@
         }
       }
 
-      /* Style for input fields */
       .form-input {
         border: none;
         border-bottom: 1px solid #9ca3af;
