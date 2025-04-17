@@ -6,7 +6,9 @@
     "@types/bun": "latest"
   },
   "scripts": {
-    "build": "./build.sh"
+    "build": "./build.sh",
+    "start": "bun ./index.html",
+    "dev": "bun run index.ts"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
